@@ -20,9 +20,8 @@ class Assignment1:
         self.print_list = printList()  # Create an empty list of print requests创建一个空的打印请求队列
         self.mThreads = []             # list for machine threads机器线程列表
         self.pThreads = []             # list for printer threads打印机线程列表
-        self.queue_lock = threading.Lock()            
-        self.empty_slots = threading.Semaphore(5)  
-        self.full_slots = threading.Semaphore(0)
+        self.semaphore = threading.Semaphore(self.QUEUE_SIZE)  
+        self.binary = threading.Semaphore(1)   
 
     def startSimulation(self):
         # Create Machine and Printer threads
