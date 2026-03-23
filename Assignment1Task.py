@@ -20,7 +20,7 @@ class Assignment1:
         self.print_list = printList()  # Create an empty list of print requests创建一个空的打印请求队列
         self.mThreads = []             # list for machine threads机器线程列表
         self.pThreads = []             # list for printer threads打印机线程列表
-        self.semaphore = threading.Semaphore(self.QUEUE_SIZE)  
+        self.semaphore = threading.Semaphore(5)  
         self.binary = threading.Semaphore(1)   
 
     def startSimulation(self):
@@ -101,22 +101,17 @@ class Assignment1:
             self.outer = outer  # Reference to the Assignment1 instance
 
         def run(self):
-            while self.outer.sim_active:
-                # Machine sleeps for a random amount of time
-                self.machineSleep()
-                # Machine wakes up and sends a print request
-                # Write code here
-                if not self.outer.sim_active:
-                    break
-                self.outer.empty_slots.acquire()  # Wait until there is at least one empty slot in the queue
-                if not self.outer.sim_active:
-                    self.outer.empty_slots.release()  # Release the slot if the simulation is no longer active
-                    break
+         while self.outer.sim_active:
+          self.machineSleep()
+          self.isRequestSafe(self.machineID)   
+          self.printRequest(self.machineID)   
+          self.postRequest(self.machineID) 
 
-                with self.outer.queue_lock:  # Lock the queue to safely access it
-                    self.printRequest(self.machineID)  # Send a print request
-
-                self.outer.full_slots.release()  # Signal that there is now one more full slot in the queue
+        def isRequestSafe(self, id):
+         print(f"Machine {id} Checking availability")
+         self.outer.semaphore.acquire()   
+         self.outer.binary.acquire()      
+         print(f"Machine {id} will proceed") 
 
         def machineSleep(self):
             sleepSeconds = random.randint(1, self.outer.MAX_MACHINE_SLEEP)
@@ -128,3 +123,7 @@ class Assignment1:
             doc = printDoc(f"My name is machine {id}", id)
             # Insert it in the print queue
             self.outer.print_list.queueInsert(doc)
+        
+        def postRequest(self, id):
+            print(f"Machine {id} Releasing binary semaphore")
+            self.outer.binary.release()  
