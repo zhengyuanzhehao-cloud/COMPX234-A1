@@ -69,29 +69,22 @@ class Assignment1:
             self.outer = outer  # Reference to the Assignment1 instance
 
         def run(self):
+           
             while self.outer.sim_active:
-                # Simulate printer taking some time to print the document
-                
-                # Grab the request at the head of the queue and print it
-                # Write code here
-                self.outer.full_slots.acquire()  # Wait until there is at least one print request in the queue
-                if not self.outer.sim_active:
-                    break
-
-                with self.outer.queue_lock:  # Lock the queue to safely access it
-                    self.printDox(self.printerID) 
-                     # Print the document at the head of the queue
-                self.outer.empty_slots.release()  # Signal that there is now one more empty slot in the queue
-                self.printerSleep()  # Simulate the printer taking some time to print the document
+              self.printerSleep()
+              if self.outer.print_list.head is not None:
+                 self.printDox(self.printerID)
 
         def printerSleep(self):
             sleepSeconds = random.randint(1, self.outer.MAX_PRINTER_SLEEP)
             time.sleep(sleepSeconds)
 
         def printDox(self, printerID):
-            print(f"Printer ID: {printerID} : now available")
-            # Print from the queue
-            self.outer.print_list.queuePrint(printerID)
+               print(f"Printer ID: {printerID} : now available")
+               self.outer.binary.acquire()   
+               self.outer.print_list.queuePrint(printerID)
+               self.outer.binary.release()   
+               self.outer.semaphore.release()
 
     # Machine class
     class machineThread(threading.Thread):
