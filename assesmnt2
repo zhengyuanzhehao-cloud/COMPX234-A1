@@ -77,7 +77,13 @@ class ReadersWritersMonitor:
         """
         with self.condition:
             # TODO: Replace 'pass' with your logic
-            pass
+            # reduce the count of active readers
+            self.active_readers -= 1
+            # print log message about reader finishing reading and current active readers
+            print(f"Reader {reader_id} stops reading. Active readers = {self.active_readers}")
+            # until there are no active readers, writers may be waiting, so notify them
+            if self.active_readers == 0:
+               self.condition.notify_all()  
 
     def start_write(self, writer_id: int) -> None:
         """
