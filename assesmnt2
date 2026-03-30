@@ -184,6 +184,30 @@ def main() -> None:
     random.seed(42)
 
     monitor = ReadersWritersMonitor()
+    readers = [
+    Reader(reader_id=1, monitor=monitor),
+    Reader(reader_id=2, monitor=monitor),
+    Reader(reader_id=3, monitor=monitor)
+    ]
+
+
+    writers = [
+    Writer(writer_id=1, monitor=monitor),
+    Writer(writer_id=2, monitor=monitor)
+    ]
+
+    all_threads = readers + writers
+
+
+    for thread in all_threads:
+        thread.start()
+
+
+    for thread in all_threads:
+        thread.join()
+
+
+    print("\n=== Simulation completed successfully! All readers and writers finished their tasks ===")
 
    
 
