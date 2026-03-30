@@ -37,7 +37,6 @@ class ReadersWritersMonitor:
     def __init__(self) -> None:
         self.lock = threading.Lock()
         self.condition = threading.Condition(self.lock)
-
         self.active_readers = 0
         self.active_writers = 0
         self.waiting_writers = 0
@@ -53,9 +52,19 @@ class ReadersWritersMonitor:
         3. Increase active_readers.
         4. Print a useful log message.
         """
+
+
+
         with self.condition:
             # TODO: Replace 'pass' with your logic
-            pass
+            # Waiting: Block if there is an active writer, and recheck the condition to avoid spurious wakeups.
+            while self.active_writers > 0:
+                print(f"Reader {reader_id} is waiting to read (active writer exists)")
+                self.condition.wait()
+            # no active writers, can proceed to read
+            self.active_readers += 1
+            # print log message about reader starting to read and current active readers
+            print(f"Reader {reader_id} starts reading. Active readers = {self.active_readers}")
 
     def end_read(self, reader_id: int) -> None:
         """
