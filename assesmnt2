@@ -185,26 +185,7 @@ def main() -> None:
 
     monitor = ReadersWritersMonitor()
 
-    #TODO: Create at least 3 Reader threads.
-    readers = [
-        Reader(reader_id=1, monitor=monitor)
-    ]
-    
-    #TODO: Create at least 2 writer threads.
-    writers = [
-        Writer(writer_id=1, monitor=monitor)
-    ]
-
-    all_threads = readers + writers
-    
-    # TODO: Start all threads
-
-    
-    # TODO: Wait for all threads to finish
-
-
-    # TODO: Print final message that simulation completed
-
+   
 
 if __name__ == "__main__":
     main()
