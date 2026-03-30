@@ -98,7 +98,17 @@ class ReadersWritersMonitor:
         """
         with self.condition:
             # TODO: Replace 'pass' with your logic
-            pass
+            # add to waiting writers count before waiting, so that readers can see that a writer is waiting and give it priority if needed
+            self.waiting_writers += 1
+            # Wait: Block if there are active readers or active writers, and recheck the condition to avoid spurious wakeups
+            while self.active_readers > 0 or self.active_writers > 0:
+             print(f"Writer {writer_id} is waiting to write (active readers/writers exist)")
+             self.condition.wait()
+            # writer can proceed to write, so update the counts: decrease waiting writers and set active writers to 1
+            self.waiting_writers -= 1
+            self.active_writers = 1
+            # print log message about writer starting to write and current active writers
+            print(f"Writer {writer_id} starts writing. Active writers = {self.active_writers}")
 
     def end_write(self, writer_id: int) -> None:
         """
