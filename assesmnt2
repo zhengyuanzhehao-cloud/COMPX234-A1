@@ -123,6 +123,10 @@ class ReadersWritersMonitor:
 
             # TODO: Replace 'pass' with your logic
             self.active_writers = 0
+            # print log message about writer finishing writing and current active writers
+            print(f"Writer {writer_id} stops writing. Active writers = {self.active_writers}")
+            # since a writer just finished, both waiting writers and readers may be able to proceed, so notify all waiting threads
+            self.condition.notify_all()
 
 # Donot Change this
 class Reader(threading.Thread):
